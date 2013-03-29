@@ -1,0 +1,187 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<meta charset="utf-8">
+<title>Ingreso Getaxis</title>
+<link href="jquery-mobile/jquery.mobile-1.0a3.min.css" rel="stylesheet" type="text/css"/>
+<script src="jquery-mobile/jquery-1.5.min.js" type="text/javascript"></script>
+<script src="jquery-mobile/jquery.mobile-1.0a3.min.js" type="text/javascript"></script>
+<script src="/phonegap.js" type="text/javascript"></script>
+<script type="text/javascript">
+function leerGET(){ 
+  var cadGET = location.search.substr(1,location.search.length); 
+  var arrGET = cadGET.split("&"); 
+  var asocGET = new Array(); 
+  var variable = ""; 
+  var valor = ""; 
+  for(i=0;i<arrGET.length;i++){ 
+    var aux = arrGET[i].split("="); 
+    variable = aux[0]; 
+    valor = aux[1]; 
+    asocGET[variable] = valor; 
+  } 
+  return asocGET; 
+} 
+var paresVarValor = leerGET();
+var taxista= paresVarValor["taxista"];
+var pasajero= paresVarValor["pasajero"];
+</script>
+<script type="text/javascript">
+function creaRequest()
+{	
+if (window.XMLHttpRequest) {
+        return new window.XMLHttpRequest;
+    }
+    else {
+        try {
+            return new ActiveXObject("MSXML2.XMLHTTP.3.0");
+        }
+        catch(ex) {
+			alert(ex);
+            return null;
+        }
+    }
+}
+
+var http = creaRequest();
+var calificacion;
+var comentario;
+var perfil = "";
+
+
+function handler5()
+{
+	//pregunta si ajax esta listo y cargo la pagina correctamente
+    if (http.readyState == 4 /* complete */) {
+		//estatus en 200 se lee lo que esta en la pagina
+
+       if (http.status == 200)
+		 {
+			perfil = http.responseText;
+			llamaPerfil();
+			alert(perfil)
+			Inicia();
+	  
+        }
+    }
+}
+
+
+function perfilPasajero()
+{
+	var url = "http://201.239.164.111/Getaxis/Pasajero/Perfil.php?pasajero="+pasajero;
+	
+if (http != null) {
+    http.open("GET", url, true);
+	//handler es una funciona y se ejecuta en la siguiente linea
+    http.onreadystatechange = handler5;
+    http.send();
+}
+else {
+    alert("AJAX (XMLHTTP) not supported.");
+}
+}
+
+
+
+function handler()
+{
+    if (!http.readyState == 4 /* complete */) {
+		alert("Ocurrio un error");
+    }
+	else
+	{
+		
+		//alert(http.responseText);
+	}
+}
+
+
+    // PhoneGap esta lista
+    //
+    function Inicia() {
+     
+			var url ="http://201.239.164.111/Getaxis/Taxista/Llege.php?taxista="+taxista+"&pasajero="+pasajero;
+			
+	
+if (http != null) {
+    http.open("GET", url, true);
+    http.onreadystatechange = handler;
+    http.send();
+}
+else {
+    alert("AJAX (XMLHTTP) not supported.");
+}
+		
+    }
+
+    // Función onError
+    //
+    function onError(error) {
+        alert('código: '    + error.code    + '\n' +
+              'mensaje: ' + error.message + '\n');
+    }
+	function Calificar()
+{
+	calificacion = document.getElementById('calificacion').value;
+	comentario = document.getElementById('comentario').value;
+	var url = "http://201.239.164.111/Getaxis/Taxista/CalificarPasajero.php?taxista="+taxista+"&pasajero="+pasajero+"&calificacion="+calificacion+"&comentario="+comentario;
+	//alert(url);
+	if (http != null) {
+    	http.open("GET", url, true);
+    	http.onreadystatechange = handler3;
+    	http.send();
+    }
+	else {
+    alert("AJAX (XMLHTTP) not supported.");}
+}
+function handler3()
+{
+    if (http.readyState == 4 /* complete */) {
+		if (http.status == 200){
+			//alert(http.responseText);
+			if(http.responseText != false)
+			{
+		  alert("Comentario ralizado con Exito!!");
+		  location.href = "menu.html?taxista="+taxista; //location.href="FuiSolicitado.html?taxista="+taxista+"&pasajero="+pasajero;
+		  }
+		}
+    }
+}
+</script>
+
+</head> 
+<body onLoad="perfilPasajero()"> 
+
+<div data-role="page" id="page">
+	<div data-role="header">
+		<h1>Calificación</h1>
+	</div>
+    <div data-role="content">
+    <div data-role="fieldcontain" id="perfil">
+		<script type="text/javascript">
+		function llamaPerfil()
+		{
+			document.getElementById("perfil").innerHTML = perfil;
+		}
+  
+</script>
+    </div>
+   
+      <div data-role="fieldcontain">
+        <label for="calificacion">Valor:</label>
+        <input type="range" name="calificacion" id="calificacion" value="0" min="0" max="5" />
+        <div data-role="fieldcontain">
+          <label for="comentario">Comentario:</label>
+          <textarea cols="40" rows="8" name="comentario" id="comentario"></textarea>
+          <button onClick="Calificar()"data-icon="info">Calificar</button>
+        </div>
+      </div>
+    
+    </div>
+	<div data-role="footer">
+		<h4>XtreamSoft @ [Taxista V.1.0]</h4>
+	</div>
+</div>
+</body>
+</html>

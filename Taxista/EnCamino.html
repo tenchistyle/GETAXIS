@@ -1,0 +1,137 @@
+f<!DOCTYPE html> 
+<html>
+<head>
+<meta charset="utf-8">
+<title>Ingreso Getaxis</title>
+<link href="jquery-mobile/jquery.mobile-1.0a3.min.css" rel="stylesheet" type="text/css"/>
+<script src="jquery-mobile/jquery-1.5.min.js" type="text/javascript"></script>
+<script src="jquery-mobile/jquery.mobile-1.0a3.min.js" type="text/javascript"></script>
+<script src="/phonegap.js" type="text/javascript"></script>
+<script type="text/javascript">
+function leerGET(){ 
+  var cadGET = location.search.substr(1,location.search.length); 
+  var arrGET = cadGET.split("&"); 
+  var asocGET = new Array(); 
+  var variable = ""; 
+  var valor = ""; 
+  for(i=0;i<arrGET.length;i++){ 
+    var aux = arrGET[i].split("="); 
+    variable = aux[0]; 
+    valor = aux[1]; 
+    asocGET[variable] = valor; 
+  } 
+  return asocGET; 
+} 
+var paresVarValor = leerGET();
+var taxista= paresVarValor["taxista"];
+var pasajero= paresVarValor["pasajero"];
+</script>
+<script type="text/javascript">
+var entro=0;
+function creaRequest()
+{	
+if (window.XMLHttpRequest) {
+        return new window.XMLHttpRequest;
+    }
+    else {
+        try {
+            return new ActiveXObject("MSXML2.XMLHTTP.3.0");
+        }
+        catch(ex) {
+			alert(ex);
+            return null;
+        }
+    }
+}
+
+var http = creaRequest();
+var lati;
+var longi;
+var user;
+var actualiza = 0;
+
+
+function handler()
+{
+    if (!http.readyState == 4 /* complete */) {
+		alert("Ocurrio un error");
+    }
+}
+
+    var watchID = null;
+
+    // PhoneGap esta lista
+    //
+    function Inicia() {
+        // Actualizar cada 3 segundos
+		//alert(taxista);
+        var options = {frequency:2000, enableHighAccuracy:true, timeout:27000};
+		watchID = navigator.geolocation.watchPosition(onSuccess, onError, options);
+    }
+
+    // Función onSuccess
+    //
+    function onSuccess(position) {
+			lati = position.coords.latitude;
+			longi = position.coords.longitude;
+
+			var url =			"http://201.239.164.111/Getaxis/Taxista/actualizaCoordenada.php?user="+taxista+"&lati="+lati+"&longi="+longi;
+	
+if (http != null) {
+    http.open("GET", url, true);
+    http.onreadystatechange = handler;
+    http.send();
+}
+else {
+    alert("AJAX (XMLHTTP) not supported.");
+}
+		
+    }
+
+    // Función onError
+    //
+    function onError(error) {
+        alert('código: '    + error.code    + '\n' +
+              'mensaje: ' + error.message + '\n');
+    }
+	function updateDisponible()
+{
+	var url = "http://201.239.164.111/Getaxis/Taxista/modoInDisponible.php?taxista="+taxista;
+	//alert(url);
+	if (http != null) {
+    	http.open("GET", url, true);
+    	http.onreadystatechange = handler3;
+    	http.send();
+    }
+	else {
+    alert("AJAX (XMLHTTP) not supported.");}
+}
+function handler3()
+{
+    if (!http.readyState == 4 /* complete */) {
+		alert("Ocurrio un error");
+    }
+}
+function llevame()
+{
+	location.href="Llege.html?taxista="+taxista+"&pasajero="+pasajero;
+}
+</script>
+
+</head> 
+<body onLoad="Inicia()"> 
+
+<div data-role="page" id="page">
+	<div data-role="header">
+		<h1>En Camino</h1>
+	</div>
+    <div data-role="content" id="perfil">
+	
+      <button onClick="llevame()"data-icon="grid">Avisar llegada</button>
+    </div>
+	<div data-role="footer">
+		<h4>XtreamSoft @ [Taxista V.1.0]</h4>
+	</div>
+</div>
+</body>
+</html>

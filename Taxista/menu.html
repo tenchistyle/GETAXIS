@@ -1,0 +1,73 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<meta charset="utf-8">
+<title>Ingreso Getaxis</title>
+<link href="jquery-mobile/jquery.mobile-1.0a3.min.css" rel="stylesheet" type="text/css"/>
+<script src="jquery-mobile/jquery-1.5.min.js" type="text/javascript"></script>
+<script src="jquery-mobile/jquery.mobile-1.0a3.min.js" type="text/javascript"></script>
+<script src="/phonegap.js" type="text/javascript"></script>
+<script type="text/javascript">
+function leerGET(){ 
+  var cadGET = location.search.substr(1,location.search.length); 
+  var arrGET = cadGET.split("&"); 
+  var asocGET = new Array(); 
+  var variable = ""; 
+  var valor = ""; 
+  for(i=0;i<arrGET.length;i++){ 
+    var aux = arrGET[i].split("="); 
+    variable = aux[0]; 
+    valor = aux[1]; 
+    asocGET[variable] = valor; 
+  } 
+  return asocGET; 
+} 
+var paresVarValor = leerGET();
+var taxista= paresVarValor["taxista"];
+</script>
+<script type="text/javascript">
+
+function llamaPerfil()
+{
+	location.href = "Perfil.html?taxista="+taxista;
+}
+
+function Inicia(){
+location.href = "updateDisponible.html?taxista="+taxista;
+}
+
+function llamaComentarios()
+{
+	location.href = "Comentarios.html?taxista="+taxista;
+}
+
+</script>
+</head> 
+<body> 
+
+<div data-role="page" id="page">
+	<div data-role="header">
+		Online:<script type="text/javascript">
+  document.write(" "+taxista);
+</script>
+	</div>
+	<div data-role="header">
+		<h1>Menu</h1>
+	</div>
+	<div data-role="content">
+   <br>
+    <a onClick="Inicia()" data-role="button" data-icon="forward">Modo disponible</a>
+    <br><br>
+    <div data-role="controlgroup">
+    <a onClick="llamaPerfil()" data-role="button" data-icon="check">Mi Perfil</a>
+    <a onClick="llamaComentarios()" data-role="button" data-icon="check">Mis Comentarios</a>
+    </div>
+    </div>
+    <br><br>
+    
+	<div data-role="footer">
+		<h4>XtreamSoft @ [Taxista V.1.0]</h4>
+	</div>
+</div>
+</body>
+</html>
